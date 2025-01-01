@@ -1,57 +1,47 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs-22.12.0'  // This refers to the Jenkins tool configuration for Node.js
+        nodejs 'nodejs-22.12.0'  // Use the Node.js tool defined in Jenkins
     }
- 
+
     environment {
-        NODEJS_HOME = 'C:/Program Files/nodejs'  // You can also manage this via Jenkins Node.js configuration
         SONAR_SCANNER_PATH = 'C:/Users/karan/Downloads/sonar-scanner-cli-6.2.1.4610-windows-x64/sonar-scanner-6.2.1.4610-windows-x64/bin'
     }
- 
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm  // Check out the latest code from your version control system
             }
         }
- 
+
         stage('Install Dependencies') {
             steps {
                 // Install Node.js dependencies
                 bat '''
-                set PATH=%NODEJS_HOME%;%PATH%
                 npm install
                 '''
             }
         }
- 
+
         stage('Lint') {
             steps {
                 // Run linting and fix automatically where possible
                 bat '''
-                set PATH=%NODEJS_HOME%;%PATH%
-                npm run lint 
+                npm run lint -- --fix
                 '''
             }
         }
- 
+
         stage('Build') {
-    steps {
-        // Ensure the build command runs in the correct directory and Node.js environment is set
-        script {
-            // Set the NODEJS_HOME and execute npm run build
-            bat '''
-            echo Setting up Node.js environment
-            set PATH=%NODEJS_HOME%;%PATH%
-            cd %WORKSPACE%  // Ensure we're in the correct directory (the workspace)
-            npm run build
-            '''
+            steps {
+                // Run the build command in the current directory
+                bat '''
+                npm run build
+                '''
+            }
         }
-    }
-}
-        }
- 
+
         stage('SonarQube Analysis') {
             environment {
                 SONAR_TOKEN = credentials('sonar-token')  // Retrieve SonarQube token from Jenkins credentials store
@@ -69,7 +59,7 @@ pipeline {
             }
         }
     }
- 
+
     post {
         success {
             echo 'Pipeline completed successfully'
