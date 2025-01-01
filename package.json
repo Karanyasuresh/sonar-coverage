@@ -11,13 +11,22 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-     "lint": "eslint ."
+    "lint": "eslint ."
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "eqeqeq": "error",
+      "no-unused-expressions": "error",
+      "no-sequences": "error",
+      "new-parens": "error",
+      "default-case": "warn",
+      "no-use-before-define": "error",
+      "no-mixed-operators": "warn"
+    }
   },
   "browserslist": {
     "production": [
@@ -31,16 +40,4 @@
       "last 1 safari version"
     ]
   }
-  {
-  "rules": {
-    "eqeqeq": "error",
-    "no-unused-expressions": "error",
-    "no-sequences": "error",
-    "new-parens": "error",
-    "default-case": "warn",
-    "no-use-before-define": "error",
-    "no-mixed-operators": "warn"
-  }
-}
-
 }
