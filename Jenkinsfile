@@ -1,61 +1,60 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs-22.12.0'
+        nodejs 'nodejs-22.12.0' 
     }
-
+ 
     environment {
-        NODEJS_HOME = 'C:/Program Files/nodejs'
+        NODEJS_HOME = 'C:/Program Files/nodejs'  
         SONAR_SCANNER_PATH = 'C:/Users/karan/Downloads/sonar-scanner-cli-6.2.1.4610-windows-x64/sonar-scanner-6.2.1.4610-windows-x64/bin'
     }
-
+ 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
                 checkout scm
             }
         }
-
+ 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
+                // Set the PATH and install dependencies using npm
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
                 npm install
                 '''
             }
         }
-
+ 
         stage('Lint') {
             steps {
-                echo 'Running lint checks...'
+                // Run linting to ensure code quality
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
-                npm run lint || (echo "Linting failed. Please fix issues." && exit 1)
+                npm run lint
                 '''
             }
         }
-
+ 
         stage('Build') {
             steps {
-                echo 'Building the project...'
+                // Build the React app
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
                 npm run build
                 '''
             }
         }
-
+ 
         stage('SonarQube Analysis') {
             environment {
-                SONAR_TOKEN = credentials('sonar-token')
+                SONAR_TOKEN = credentials('sonar-token') // Accessing the SonarQube token stored in Jenkins credentials
             }
             steps {
-                echo 'Starting SonarQube analysis...'
+                // Ensure that sonar-scanner is in the PATH
                 bat '''
                 set PATH=%SONAR_SCANNER_PATH%;%PATH%
-                where sonar-scanner || (echo "SonarQube scanner not found. Ensure it's installed." && exit 1)
+                where sonar-scanner || echo "SonarQube scanner not found. Please install it."
                 sonar-scanner -Dsonar.projectKey=sonar-coverage ^
                     -Dsonar.sources=. ^
                     -Dsonar.host.url=http://localhost:9000 ^
@@ -64,13 +63,13 @@ pipeline {
             }
         }
     }
-
+ 
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'Pipeline completed successfully'
         }
         failure {
-            echo 'Pipeline failed. Check the logs for details.'
+            echo 'Pipeline failed'
         }
         always {
             echo 'This runs regardless of the result.'
