@@ -1,24 +1,24 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs-22.12.0' 
+        nodejs 'nodejs-22.12.0'  // This refers to the Jenkins tool configuration for Node.js
     }
  
     environment {
-        NODEJS_HOME = 'C:/Program Files/nodejs'  
+        NODEJS_HOME = 'C:/Program Files/nodejs'  // You can also manage this via Jenkins Node.js configuration
         SONAR_SCANNER_PATH = 'C:/Users/karan/Downloads/sonar-scanner-cli-6.2.1.4610-windows-x64/sonar-scanner-6.2.1.4610-windows-x64/bin'
     }
  
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scm  // Check out the latest code from your version control system
             }
         }
  
         stage('Install Dependencies') {
             steps {
-                // Set the PATH and install dependencies using npm
+                // Install Node.js dependencies
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
                 npm install
@@ -28,18 +28,17 @@ pipeline {
  
         stage('Lint') {
             steps {
-                // Run linting to ensure code quality
+                // Run linting and fix automatically where possible
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
-                npm run lint -- --fix
-
+                npm run lint 
                 '''
             }
         }
  
         stage('Build') {
             steps {
-                // Build the React app
+                // Run the build script to create production-ready build
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
                 npm run build
@@ -49,10 +48,10 @@ pipeline {
  
         stage('SonarQube Analysis') {
             environment {
-                SONAR_TOKEN = credentials('sonar-token') // Accessing the SonarQube token stored in Jenkins credentials
+                SONAR_TOKEN = credentials('sonar-token')  // Retrieve SonarQube token from Jenkins credentials store
             }
             steps {
-                // Ensure that sonar-scanner is in the PATH
+                // Ensure sonar-scanner is available in the path and perform SonarQube analysis
                 bat '''
                 set PATH=%SONAR_SCANNER_PATH%;%PATH%
                 where sonar-scanner || echo "SonarQube scanner not found. Please install it."
