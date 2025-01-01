@@ -37,13 +37,19 @@ pipeline {
         }
  
         stage('Build') {
-            steps {
-                // Run the build script to create production-ready build
-                bat '''
-                set PATH=%NODEJS_HOME%;%PATH%
-                npm run build
-                '''
-            }
+    steps {
+        // Ensure the build command runs in the correct directory and Node.js environment is set
+        script {
+            // Set the NODEJS_HOME and execute npm run build
+            bat '''
+            echo Setting up Node.js environment
+            set PATH=%NODEJS_HOME%;%PATH%
+            cd %WORKSPACE%  // Ensure we're in the correct directory (the workspace)
+            npm run build
+            '''
+        }
+    }
+}
         }
  
         stage('SonarQube Analysis') {
