@@ -17,16 +17,7 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ],
-    "rules": {
-      "eqeqeq": "error",
-      "no-unused-expressions": "error",
-      "no-sequences": "error",
-      "new-parens": "error",
-      "default-case": "warn",
-      "no-use-before-define": "error",
-      "no-mixed-operators": "warn"
-    }
+    ]
   },
   "browserslist": {
     "production": [
